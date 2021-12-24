@@ -11,9 +11,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         setupWindow()
+        setupDependencies()
         /// Remove `simulateAuthFlow` and move auth logic into appropriate module
         simulateAuthFlow()
-        navigationController.setViewControllers([ListViewController()], animated: false)
+        navigationController.setViewControllers([ListViewController(dependencyContainer)], animated: false)
         return true
     }
 }
@@ -30,6 +31,10 @@ private extension AppDelegate {
         window?.makeKeyAndVisible()
         (UIApplication.shared.delegate as! AppDelegate).window = window
     }
+    
+    func setupDependencies() {
+        dependencyContainer.register(MoviesService.self) { _ in MoviesService() }.inObjectScope(.container)
+    }
 }
 
 // MARK: - Simulations
@@ -41,7 +46,7 @@ private extension AppDelegate {
      Simulates auth behaviour the result: appropriate user accessToken is received
      */
     func simulateAuthFlow() {
-        let token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZjVjNzRmYTllZDVkNmYyZjFiN2NlOWI4Mzg4YjVmZCIsInN1YiI6IjYxYzM4MDVlZDA1YTAzMDA1ZjlkNGMyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.0RdwyYhnLIFFaNBgfaz_uaN70WNshMlwCqjqClB29BU"
+        let token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZjVjNzRmYTllZDVkNmYyZjFiN2NlOWI4Mzg4YjVmZCIsInN1YiI6IjYxYzM4MDVlZDA1YTAzMDA1ZjlkNGMyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.0RdwyYhnLIFFaNBgfaz_uaN70WNshMlwCqjqClB29BU"
         do {
             try saveAccessToken(token)
         } catch {

@@ -21,6 +21,7 @@ extension APIResponse {
         switch httpURLResponse.statusCode {
         case 200:
             return self
+            
         default:
             throw APIResponseError.error(description: HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode))
         }

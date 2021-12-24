@@ -43,6 +43,8 @@
 		FEF1D10D2774D83000603BCB /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D10C2774D83000603BCB /* DateFormatter.swift */; };
 		FEF1D10F2774D92900603BCB /* CoreDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D10E2774D92900603BCB /* CoreDataError.swift */; };
 		FEF1D1112774DB2D00603BCB /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D1102774DB2D00603BCB /* APIError.swift */; };
+		FEF1D1132775CC4700603BCB /* ListViewCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D1122775CC4700603BCB /* ListViewCellNode.swift */; };
+		FEF1D1152775CE1D00603BCB /* String+Attributed.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D1142775CE1D00603BCB /* String+Attributed.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +111,8 @@
 		FEF1D10C2774D83000603BCB /* DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
 		FEF1D10E2774D92900603BCB /* CoreDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataError.swift; sourceTree = "<group>"; };
 		FEF1D1102774DB2D00603BCB /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		FEF1D1122775CC4700603BCB /* ListViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCellNode.swift; sourceTree = "<group>"; };
+		FEF1D1142775CE1D00603BCB /* String+Attributed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Attributed.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +236,7 @@
 			children = (
 				FE7C64072774896500C009AD /* ListViewController.swift */,
 				FEF1D0CF277493B100603BCB /* ListViewNode.swift */,
+				FEF1D1122775CC4700603BCB /* ListViewCellNode.swift */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -354,6 +359,7 @@
 			isa = PBXGroup;
 			children = (
 				FEF1D0FB2774CF0400603BCB /* CodingUserInfoKey+ManagedObjectContext.swift */,
+				FEF1D1142775CE1D00603BCB /* String+Attributed.swift */,
 			);
 			path = Swift;
 			sourceTree = "<group>";
@@ -629,11 +635,13 @@
 				FEF1D1112774DB2D00603BCB /* APIError.swift in Sources */,
 				FEF1D0E32774BA5800603BCB /* ServerManager.swift in Sources */,
 				FEF1D10F2774D92900603BCB /* CoreDataError.swift in Sources */,
+				FEF1D1132775CC4700603BCB /* ListViewCellNode.swift in Sources */,
 				FEF1D0DE2774B96100603BCB /* APIResponse.swift in Sources */,
 				FEF1D0D0277493B100603BCB /* ListViewNode.swift in Sources */,
 				FEF1D0DC2774B6C700603BCB /* TokenManageable.swift in Sources */,
 				FEF1D0D72774B5ED00603BCB /* KeychainService.swift in Sources */,
 				FEF1D0E62774BA9300603BCB /* HTTPHeaderField.swift in Sources */,
+				FEF1D1152775CE1D00603BCB /* String+Attributed.swift in Sources */,
 				FE7C64042774896500C009AD /* AppDelegate.swift in Sources */,
 				FEF1D0FE2774CF5100603BCB /* MoviesService.swift in Sources */,
 				FEF1D10A2774D48100603BCB /* Movie.swift in Sources */,

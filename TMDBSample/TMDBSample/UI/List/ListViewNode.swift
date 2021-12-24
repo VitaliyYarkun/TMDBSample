@@ -11,18 +11,16 @@ protocol ListViewNodeDelegate: AnyObject {
 
 final class ListViewNode: ASDisplayNode, CoreDataManageable {
     weak var delegate: ListViewNodeDelegate?
-    /*
-    private lazy var fetchRequest: NSFetchRequest<Product> = {
-        let request: NSFetchRequest<Product> = Product.fetchRequest()
-        let categorySort = NSSortDescriptor(key: #keyPath(Product.category), ascending: true)
-        let nameSort = NSSortDescriptor(key: #keyPath(Product.name), ascending: true)
-        let quantitySort = NSSortDescriptor(key: #keyPath(Product.quantityInCurrentStore), ascending: false)
-        request.sortDescriptors = [categorySort, nameSort, quantitySort]
+    
+    private lazy var fetchRequest: NSFetchRequest<Movie> = {
+        let request: NSFetchRequest<Movie> = Movie.fetchRequest()
+        let titleSort = NSSortDescriptor(key: #keyPath(Movie.title), ascending: true)
+        request.sortDescriptors = [titleSort]
         return request
     }()
     
-    private lazy var fetchedResultsController: NSFetchedResultsController<Product> = {
-        let controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: coreDataStack.mainContext, sectionNameKeyPath: #keyPath(Product.category), cacheName: nil)
+    private lazy var fetchedResultsController: NSFetchedResultsController<Movie> = {
+        let controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: coreDataStack.mainContext, sectionNameKeyPath: nil, cacheName: nil)
         controller.delegate = self
         return controller
     }()
@@ -38,17 +36,13 @@ final class ListViewNode: ASDisplayNode, CoreDataManageable {
         
         tableNode.delegate = self
         tableNode.dataSource = self
-        searchNode.delegate = self
         automaticallyManagesSubnodes = true
-        defaultLayoutTransitionDuration = 0.1
     }
     
     override func didLoad() {
         super.didLoad()
         
-        backgroundColor = UIColor.deepKoamaru
-        tableNode.view.separatorStyle = .none
-        tableNode.backgroundColor = UIColor.deepKoamaru
+        backgroundColor = .white
         
         do {
             try fetchedResultsController.performFetch()
@@ -60,115 +54,32 @@ final class ListViewNode: ASDisplayNode, CoreDataManageable {
     // MARK: Methods
     
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        // Search
-        searchNode.cornerRadius = 5.0
-        searchNode.style.width = ASDimensionMake(constrainedSize.max.width)
-        let searchInsetSpec = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 20.0, left: 20.0, bottom: 0.0, right: 20.0), child: searchNode)
-        
         // Table
         tableNode.style.flexGrow = 1.0
         
         // General
-        if let node = detailsViewNode {
-            return ASInsetLayoutSpec(insets: UIEdgeInsets.zero, child: node)
-        } else {
-            let stackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 20.0, justifyContent: .start, alignItems: .center, children: [searchInsetSpec, tableNode])
-            stackSpec.style.preferredSize = constrainedSize.max
-            return stackSpec
-        }
+        let stackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 20.0, justifyContent: .start, alignItems: .center, children: [tableNode])
+        stackSpec.style.preferredSize = constrainedSize.max
+        return stackSpec
     }
-     */
 }
 
-
-/*
 // MARK: - Internal
 
-extension TMainLeftViewNode {
-    func didScanBarcode(_ code: String) -> Bool {
-        guard let selectedProducts = selectedDataSourceProvider?.selectedDataSource else { return false }
-        do {
-            fetchRequest.predicate = scannedProductTypePredicate(code: code)
-            let products = try coreDataStack.mainContext.fetch(fetchRequest)
-            guard let scannedProduct = products.first else { return false }
-            
-            if let addedProduct = selectedProducts.first(where: { $0.product.barcode == scannedProduct.barcode }) {
-                    addedProduct.quantity += 1.0
-                } else {
-                    selectedDataSourceProvider?.selectedDataSource.append(SelectedProduct(product: scannedProduct, quantity: 1.0))
-                }
-            delegate?.didUpdateSelectedDataSource()
-            let successSoundId: SystemSoundID = 1394
-            AudioServicesPlaySystemSound(successSoundId)
-            return true
-        } catch let error as NSError {
-            print("Fetching error: \(error), \(error.userInfo)")
-            return false
-        }
-    }
-    
-    func resetNode() {
+extension ListViewNode {
+    func reloadNode() {
         tableNode.reloadData()
-        detailsViewNode = nil
-        transitionLayout(withAnimation: false, shouldMeasureAsync: false, measurementCompletion: nil)
     }
 }
 
 // MARK: - Private
 
-private extension TMainLeftViewNode {
-    func scannedProductTypePredicate(code: String) -> NSPredicate {
-        return NSCompoundPredicate(type: .or, subpredicates: [
-            NSPredicate(format: "%K contains[c] %@", #keyPath(Product.name), code),
-            NSPredicate(format: "%K contains[c] %@", #keyPath(Product.article), code),
-            NSPredicate(format: "%K contains[c] %@", #keyPath(Product.manufacturer), code),
-            NSPredicate(format: "%K contains[c] %@", #keyPath(Product.barcode), code),
-            NSPredicate(format: "%K contains[c] %@", #keyPath(Product.category), code)])
-    }
-
-    func processSelectedProduct(_ product: Product) {
-        let request: NSFetchRequest<Product> = Product.fetchRequest()
-        request.returnsObjectsAsFaults = false
-        request.predicate = NSPredicate(format: "%K == %d", #keyPath(Product.templateId), product.templateId)
-        do {
-            let results = try coreDataStack.mainContext.fetch(request)
-            transitionToDetailsView(selectedProduct: product, products: results)
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
-        }
-    }
-    
-    func transitionToDetailsView(selectedProduct: Product, products: [Product]) {
-        detailsViewNode = TMainLeftDetailsViewNode(selectedProduct: selectedProduct, products: products)
-        detailsViewNode?.delegate = self
-
-        transitionLayout(withAnimation: true, shouldMeasureAsync: false, measurementCompletion: nil)
-    }
-}
-
-// MARK: - TMainLeftDetailsViewNodeDelegate
-
-extension TMainLeftViewNode: TMainLeftDetailsViewNodeDelegate {
-    func didClose() {
-        detailsViewNode = nil
-        transitionLayout(withAnimation: true, shouldMeasureAsync: false, measurementCompletion: nil)
-    }
-    
-    func didAddProduct(_ selectedProduct: SelectedProduct) {
-        guard let selectedProducts = selectedDataSourceProvider?.selectedDataSource else { return }
-        
-        if let addedProduct = selectedProducts.first(where: { $0 == selectedProduct }) {
-            addedProduct.quantity += 1.0
-            delegate?.reloadRightNode()
-        } else {
-            selectedDataSourceProvider?.selectedDataSource.append(selectedProduct)
-        }
-    }
+private extension ListViewNode {
 }
 
 // MARK: - ASTableDataSource
 
-extension TMainLeftViewNode: ASTableDataSource {
+extension ListViewNode: ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
         return fetchedResultsController.sections?.count ?? 0
     }
@@ -179,10 +90,10 @@ extension TMainLeftViewNode: ASTableDataSource {
     }
     
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let product = fetchedResultsController.object(at: indexPath)
+        let movie = fetchedResultsController.object(at: indexPath)
         
         let cellNodeBlock = { () -> ASCellNode in
-            return TMainLeftCellNode(product: product)
+            return ListViewCellNode(movie: movie)
         }
         
         return cellNodeBlock
@@ -191,45 +102,15 @@ extension TMainLeftViewNode: ASTableDataSource {
 
 // MARK: - ASTableDelegate
 
-extension TMainLeftViewNode: ASTableDelegate {
+extension ListViewNode: ASTableDelegate {
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        let product = fetchedResultsController.object(at: indexPath)
-        processSelectedProduct(product)
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let sectionInfo = fetchedResultsController.sections?[section]
-        
-        // 40 is for container inset from left edge(20) + contentHorizontal inset from left edge(20)
-        let headerView = UIView(frame: CGRect(x: 40.0, y: 0.0, width: tableView.frame.size.width - 40.0, height: 60.0))
-        headerView.backgroundColor = UIColor.deepKoamaru
-        
-        let label = UILabel(frame: headerView.frame)
-        label.attributedText = sectionInfo?.name.attributed(with: Attributes.section)
-        headerView.addSubview(label)
-        return headerView
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 60.0
-    }
-}
-
-// MARK: - SearchNodeDelegate
-
-extension TMainLeftViewNode: TSearchTextNodeDelegate {
-    func didUpdateText(_ text: String) {
-        searchedText = text
-    }
-    
-    func didTapScanButton() {
-        delegate?.didTapScanButton()
+        let movie = fetchedResultsController.object(at: indexPath)
     }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
 
-extension TMainLeftViewNode: NSFetchedResultsControllerDelegate {
+extension ListViewNode: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableNode.reloadData()
     }
@@ -254,4 +135,3 @@ extension TMainLeftViewNode: NSFetchedResultsControllerDelegate {
 //        }
 //    }
 }
-*/

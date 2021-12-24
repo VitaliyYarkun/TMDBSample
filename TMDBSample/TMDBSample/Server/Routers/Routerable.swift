@@ -5,7 +5,7 @@ protocol Routerable: Requestable {
     var path: String { get }
     var queryItems: [URLQueryItem]? { get }
     
-    func urlRequest() throws ->  URLRequest
+    func urlRequest(_ hostType: BaseURLComponents.HostType) throws ->  URLRequest
 }
 
 extension Routerable {
@@ -13,9 +13,9 @@ extension Routerable {
         return nil
     }
     
-    func urlRequest() throws ->  URLRequest {
+    func urlRequest(_ hostType: BaseURLComponents.HostType = .default) throws ->  URLRequest {
         var urlComponents = URLComponents()
-        baseConfigure(urlComponents: &urlComponents)
+        baseConfigure(urlComponents: &urlComponents, hostType: hostType)
         urlComponents.path += path
         urlComponents.queryItems = queryItems
         

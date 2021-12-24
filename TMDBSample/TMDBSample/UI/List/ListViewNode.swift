@@ -5,6 +5,7 @@ import AsyncDisplayKit
 
 protocol ListViewNodeDelegate: AnyObject {
     func didSelectMovie()
+    func requestPoster(movieId: Int32, path: String)
 }
 
 // MARK: - Class implementation
@@ -92,8 +93,10 @@ extension ListViewNode: ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         let movie = fetchedResultsController.object(at: indexPath)
         
-        let cellNodeBlock = { () -> ASCellNode in
-            return ListViewCellNode(movie: movie)
+        let cellNodeBlock = { [weak self] () -> ASCellNode in
+            let cell = ListViewCellNode(movie: movie)
+            cell.delegate = self
+            return cell
         }
         
         return cellNodeBlock
@@ -111,27 +114,48 @@ extension ListViewNode: ASTableDelegate {
 // MARK: - NSFetchedResultsControllerDelegate
 
 extension ListViewNode: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableNode.reloadData()
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableNode.view.beginUpdates()
+    }
+
+   
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch (type) {
+        case .insert:
+            if let indexPath = newIndexPath {
+                tableNode.insertRows(at: [indexPath], with: .fade)
+            }
+        case .delete:
+            if let indexPath = indexPath {
+                tableNode.deleteRows(at: [indexPath], with: .fade)
+            }
+        case .move:
+            if let indexPath = indexPath {
+                tableNode.deleteRows(at: [indexPath], with: .fade)
+            }
+            if let newIndexPath = newIndexPath {
+                tableNode.insertRows(at: [newIndexPath], with: .fade)
+            }
+            break;
+        case .update:
+            if let indexPath = indexPath, let node = tableNode.nodeForRow(at: indexPath) as? ListViewCellNode {
+                let movie = fetchedResultsController.object(at: indexPath)
+                node.reloadNode(with: movie)
+            }
+        @unknown default:
+            fatalError()
+        }
     }
     
-//    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-//        switch (type) {
-//            case .insert:
-//                if let indexPath = newIndexPath {
-//                    tableNode.insertRows(at: [indexPath], with: .fade)
-//                }
-//            case .delete:
-//                if let indexPath = indexPath {
-//                    tableNode.deleteRows(at: [indexPath], with: .fade)
-//                }
-//            case .update:
-//                if let indexPath = indexPath, let node = tableNode.nodeForRow(at: indexPath) as? TMainLeftCellNode {
-//                    let product = fetchedResultsController.object(at: indexPath)
-//                    node.reloadNode(with: product)
-//                }
-//        default:
-//            break
-//        }
-//    }
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableNode.view.endUpdates()
+    }
+}
+
+// MARK: - ListViewCellNodeDelegate
+
+extension ListViewNode: ListViewCellNodeDelegate {
+    func requestPoster(movieId: Int32, path: String) {
+        delegate?.requestPoster(movieId: movieId, path: path)
+    }
 }

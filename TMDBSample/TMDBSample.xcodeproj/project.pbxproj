@@ -45,6 +45,8 @@
 		FEF1D1112774DB2D00603BCB /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D1102774DB2D00603BCB /* APIError.swift */; };
 		FEF1D1132775CC4700603BCB /* ListViewCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D1122775CC4700603BCB /* ListViewCellNode.swift */; };
 		FEF1D1152775CE1D00603BCB /* String+Attributed.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D1142775CE1D00603BCB /* String+Attributed.swift */; };
+		FEF1D1172776123D00603BCB /* Fetchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D1162776123D00603BCB /* Fetchable.swift */; };
+		FEF1D119277613C900603BCB /* Data+ImageScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1D118277613C900603BCB /* Data+ImageScale.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +115,8 @@
 		FEF1D1102774DB2D00603BCB /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		FEF1D1122775CC4700603BCB /* ListViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCellNode.swift; sourceTree = "<group>"; };
 		FEF1D1142775CE1D00603BCB /* String+Attributed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Attributed.swift"; sourceTree = "<group>"; };
+		FEF1D1162776123D00603BCB /* Fetchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fetchable.swift; sourceTree = "<group>"; };
+		FEF1D118277613C900603BCB /* Data+ImageScale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+ImageScale.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -263,6 +267,7 @@
 				FEF1D10E2774D92900603BCB /* CoreDataError.swift */,
 				FEF1D0CA277491A100603BCB /* CoreDataStack.swift */,
 				FEF1D0D32774B32B00603BCB /* CoreDataManageable.swift */,
+				FEF1D1162776123D00603BCB /* Fetchable.swift */,
 				FEF1D1022774D21200603BCB /* Models */,
 			);
 			path = CoreData;
@@ -377,6 +382,7 @@
 			isa = PBXGroup;
 			children = (
 				FEF1D10C2774D83000603BCB /* DateFormatter.swift */,
+				FEF1D118277613C900603BCB /* Data+ImageScale.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -619,9 +625,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEF1D119277613C900603BCB /* Data+ImageScale.swift in Sources */,
 				FEF1D0D92774B64500603BCB /* SecureAllocator.swift in Sources */,
 				FEF1D0ED2774BC6A00603BCB /* MoviesRouter.swift in Sources */,
 				FEF1D0FC2774CF0400603BCB /* CodingUserInfoKey+ManagedObjectContext.swift in Sources */,
+				FEF1D1172776123D00603BCB /* Fetchable.swift in Sources */,
 				FEF1D1082774D48100603BCB /* MoviePoster.swift in Sources */,
 				FEF1D10D2774D83000603BCB /* DateFormatter.swift in Sources */,
 				FE7C640E2774896500C009AD /* TMDBSample.xcdatamodeld in Sources */,

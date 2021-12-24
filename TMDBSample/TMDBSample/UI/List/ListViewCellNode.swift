@@ -1,18 +1,22 @@
 import AsyncDisplayKit
 
-private enum Size {
-    static let cellHeight: CGFloat = 60.0
+// MARK: - Delegate
+
+protocol ListViewCellNodeDelegate: AnyObject {
+    func requestPoster(movieId: Int32, path: String)
 }
 
 // MARK: - Class implementation
 
 final class ListViewCellNode: ASCellNode {
+    weak var delegate: ListViewCellNodeDelegate? = nil
+    
     private var movie: Movie
     private let titleTextNode: ASTextNode = ASTextNode()
     private let imageNode: ASImageNode = {
         let node = ASImageNode()
         node.contentMode = .scaleAspectFit
-        node.image = UIImage(named: "TImagePlaceholder")
+        node.image = UIImage(named: "PosterPlaceholder")
         return node
     }()
     
@@ -32,7 +36,13 @@ final class ListViewCellNode: ASCellNode {
         backgroundColor = .white
     }
     
-    // MARK: Methods
+    override func didEnterPreloadState() {
+        super.didEnterPreloadState()
+        
+        if movie.posterThumbnail == nil, let path = movie.posterPath {
+            delegate?.requestPoster(movieId: movie.movieId, path: path)
+        }
+    }
     
     override func didEnterVisibleState() {
         super.didEnterVisibleState()
@@ -47,9 +57,8 @@ final class ListViewCellNode: ASCellNode {
     
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize = CGSize(width: 40.0, height: 40.0)
-        titleTextNode.style.width = ASDimensionMake(constrainedSize.max.width * 0.2)
-        titleTextNode.style.maxHeight = ASDimensionMake(Size.cellHeight * 0.7)
         let stackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 20.0, justifyContent: .spaceBetween, alignItems: .center, children: [titleTextNode, imageNode])
+        stackSpec.style.flexGrow = 1
         return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 10.0, left: 20.0, bottom: 10.0, right: 20.0), child: stackSpec)
     }
 }
@@ -57,6 +66,10 @@ final class ListViewCellNode: ASCellNode {
 // MARK: - Private
 
 private extension ListViewCellNode {
+    enum Size {
+        static let cellHeight: CGFloat = 60.0
+    }
+    
     func setupContent(_ movie: Movie) {
         setupTextNode(titleTextNode, text: movie.title ?? "", attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
     }
@@ -74,5 +87,8 @@ extension ListViewCellNode {
     func reloadNode(with movie: Movie) {
         self.movie = movie
         setupContent(movie)
+        if let posterData = movie.posterThumbnail {
+            imageNode.image = UIImage(data: posterData)
+        }
     }
 }

@@ -22,7 +22,7 @@ final class ListViewController: ASDKViewController<ListViewNode> {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .green
+        navigationItem.title = NSLocalizedString("Movies", comment: "")
         
         firstly {
             baseDownload()
@@ -48,6 +48,10 @@ private extension ListViewController {
 
 extension ListViewController: ListViewNodeDelegate {
     func didSelectMovie() {}
+    
+    func requestPoster(movieId: Int32, path: String) {
+        moviesAPI.requestPoster(for: movieId, path: path)
+    }
 }
 
 // MARK: - MoviesServiceDelegate

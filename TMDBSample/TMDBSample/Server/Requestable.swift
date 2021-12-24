@@ -15,7 +15,7 @@ private extension BaseURLComponents.HostType {
     var host: String {
         switch self {
         case .`default`: return "api.themoviedb.org"
-        case .image: return "image.tmdb.org/t/p/w500"
+        case .image: return "image.tmdb.org"
         }
     }
 }
@@ -63,8 +63,8 @@ extension Requestable {
         case .default:
             urlComponents.path = "/" + BaseURLPath.version
         
-        default:
-            break
+        case .image:
+            urlComponents.path = "/t/p/w500"
         }
     }
     

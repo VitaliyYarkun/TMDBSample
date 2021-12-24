@@ -24,6 +24,21 @@ extension MoviesService {
     }
 
     func requestPoster(for movieId: Int32, path: String) -> Promise<Void> {
-        return Promise.value(())
+        firstly {
+            Promise.value(try MoviesRouter.poster(path: path).urlRequest(.image))
+        }.then(on: defaultBackgroundQueue) { (request) -> Promise<APIResponse> in
+            self.response(for: request)
+        }.then(on: mainQueue) { (response) -> Promise<(Data, Movie)> in
+            try response.verify()
+            guard let data = response.data else { throw APIError.missingBody(reason: "MoviesService: missing data in response for requestPoster")}
+            return when(fulfilled: Promise.value(data), self.fetchMovie(by: movieId))
+        }.then(on: mainQueue) { (data, movie) -> Promise<Void> in
+            movie.posterThumbnail = data.imageScaledToHeight(height: 60.0)
+            let poster = MoviePoster(context: self.coreDataStack.mainContext)
+            poster.poster = data
+            movie.poster = poster
+            self.saveCoreDataContext()
+            return Promise.value(())
+        }
     }
 }

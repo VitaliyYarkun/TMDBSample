@@ -1,6 +1,6 @@
 import Foundation
 
-class BaseService: CoreDataManageable {
+class BaseService: Fetchable {
     let mainQueue: DispatchQueue = DispatchQueue.main
     let userInitiatedBackgroundQueue: DispatchQueue = DispatchQueue.global(qos: .userInitiated)
     let defaultBackgroundQueue: DispatchQueue = DispatchQueue.global(qos: .default)

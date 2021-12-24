@@ -24,7 +24,7 @@ enum MoviesRouter {
             return "/list/\(id)"
             
         case .poster(let path):
-            return "/\(path)"
+            return "\(path)"
         }
     }
     
@@ -44,7 +44,13 @@ enum MoviesRouter {
 
 extension MoviesRouter: Routerable {
     func addHTTPHeaders(to request: inout URLRequest) {
-        guard let token = accessToken else { return }
-        request.allHTTPHeaderFields = [HTTPHeaderField.contentType.rawValue: contentType, HTTPHeaderField.authorization.rawValue: token]
+        switch self {
+        case .list:
+            guard let token = accessToken else { return }
+            request.allHTTPHeaderFields = [HTTPHeaderField.contentType.rawValue: contentType, HTTPHeaderField.authorization.rawValue: token]
+            
+        default:
+            break
+        }
     }
 }

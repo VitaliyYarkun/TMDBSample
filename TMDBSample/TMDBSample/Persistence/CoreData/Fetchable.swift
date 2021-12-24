@@ -2,6 +2,7 @@ import CoreData
 import PromiseKit
 
 protocol Fetchable: CoreDataManageable {
+    func isDataBaseEmpty() -> Promise<Bool>
     func fetchMovie(by id: Int32) -> Promise<Movie>
 }
 
@@ -16,6 +17,17 @@ private extension Fetchable {
 // MARK: - Internal
 
 extension Fetchable {
+    func isDataBaseEmpty() -> Promise<Bool> {
+        return firstly { () -> Promise<NSFetchRequest<Movie>> in
+            return Promise.value(Movie.fetchRequest())
+        }.then(on: mainQueue) { (request) -> Promise<Bool> in
+            let count  = try self.coreDataStack.mainContext.count(for: request)
+            return Promise.value(count == 0)
+        }.recover { _ in 
+            return Promise.value(true)
+        }
+    }
+    
     func fetchMovie(by id: Int32) -> Promise<Movie> {
         return firstly { () -> Promise<NSFetchRequest<Movie>> in
             return Promise.value(Movie.fetchRequest())

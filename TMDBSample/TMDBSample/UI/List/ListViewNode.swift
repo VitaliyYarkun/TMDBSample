@@ -4,7 +4,8 @@ import AsyncDisplayKit
 // MARK: - Delegate
 
 protocol ListViewNodeDelegate: AnyObject {
-    func didSelectMovie()
+    func didSelectMovie(_ movie: Movie)
+    func requestNewBatchOfMovies()
     func requestPoster(movieId: Int32, path: String)
 }
 
@@ -108,6 +109,7 @@ extension ListViewNode: ASTableDataSource {
 extension ListViewNode: ASTableDelegate {
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         let movie = fetchedResultsController.object(at: indexPath)
+        delegate?.didSelectMovie(movie)
     }
 }
 
@@ -136,7 +138,6 @@ extension ListViewNode: NSFetchedResultsControllerDelegate {
             if let newIndexPath = newIndexPath {
                 tableNode.insertRows(at: [newIndexPath], with: .fade)
             }
-            break;
         case .update:
             if let indexPath = indexPath, let node = tableNode.nodeForRow(at: indexPath) as? ListViewCellNode {
                 let movie = fetchedResultsController.object(at: indexPath)

@@ -2,9 +2,10 @@ import Swinject
 import PromiseKit
 import AsyncDisplayKit
 
-final class ListViewController: ASDKViewController<ListViewNode> {
-
+final class ListViewController: ASDKViewController<ListViewNode>, Fetchable {
     private var moviesAPI: MoviesAPI
+    
+    private var page: Int32 = 1
     
     init(_ container: Container) {
         let service = container.resolve(MoviesService.self)!
@@ -25,7 +26,7 @@ final class ListViewController: ASDKViewController<ListViewNode> {
         navigationItem.title = NSLocalizedString("Movies", comment: "")
         
         firstly {
-            baseDownload()
+            baseDownloadIfNeeded()
         }.done { _ in
             self.node.reloadNode()
         }.catch { error in
@@ -37,9 +38,11 @@ final class ListViewController: ASDKViewController<ListViewNode> {
 // MARK: - Private
 
 private extension ListViewController {
-    func baseDownload() -> Promise<Void> {
+    func baseDownloadIfNeeded() -> Promise<Void> {
         firstly {
-            moviesAPI.requestMovies(listId: 1, page: 1)
+            isDataBaseEmpty()
+        }.then { isEmpty in
+            return isEmpty ? self.moviesAPI.requestMovies(listId: 1, page: self.page) : Promise.value(())
         }
     }
 }
@@ -47,7 +50,14 @@ private extension ListViewController {
 // MARK: - ListViewNodeDelegate
 
 extension ListViewController: ListViewNodeDelegate {
-    func didSelectMovie() {}
+    func didSelectMovie(_ movie: Movie) {
+        navigationController?.pushViewController(DetailsViewController(movie), animated: true)
+    }
+    
+    func requestNewBatchOfMovies() {
+        page += 1
+        moviesAPI.requestMovies(listId: 1, page: page)
+    }
     
     func requestPoster(movieId: Int32, path: String) {
         moviesAPI.requestPoster(for: movieId, path: path)
@@ -56,5 +66,4 @@ extension ListViewController: ListViewNodeDelegate {
 
 // MARK: - MoviesServiceDelegate
 
-extension ListViewController: MoviesServiceDelegate {
-}
+extension ListViewController: MoviesServiceDelegate {}

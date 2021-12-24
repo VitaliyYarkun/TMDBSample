@@ -66,10 +66,6 @@ final class ListViewCellNode: ASCellNode {
 // MARK: - Private
 
 private extension ListViewCellNode {
-    enum Size {
-        static let cellHeight: CGFloat = 60.0
-    }
-    
     func setupContent(_ movie: Movie) {
         setupTextNode(titleTextNode, text: movie.title ?? "", attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
     }
